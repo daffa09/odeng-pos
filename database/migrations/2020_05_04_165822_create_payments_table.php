@@ -13,6 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
+        // KYKNYA GA KEPAKE
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->decimal('amount', 8, 4);

@@ -9,12 +9,13 @@ class Customer extends Model
 {
     protected $fillable = [
         'name',
-        'email',
         'phone',
-        'address',
-        'avatar',
-        'user_id',
     ];
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 
     public function getAvatarUrl()
     {
