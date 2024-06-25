@@ -13,6 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
+        // TABLE DETAIL TRANSAKSI
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
             $table->decimal('price', 8, 4);
