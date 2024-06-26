@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('transaction', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')
-                  ->constrained('users')
-                  ->onUpdate('cascade')
-                  ->onDelete('cascade');
+                ->constrained('users')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->foreignId('customer_id')
-                  ->constrained('customers')
-                  ->onUpdate('cascade')
-                  ->onDelete('cascade');
+                ->constrained('customers')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->bigInteger('total_bayar');
             $table->bigInteger('kembalian');
             $table->enum('payment_method', ['cash', 'bank']);
