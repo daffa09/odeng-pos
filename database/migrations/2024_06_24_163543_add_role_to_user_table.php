@@ -12,11 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('role_id')
-                ->constrained('role')
-                ->onUpdate('cascade')
-                ->onDelete('cascade')
-                ->after('password');
+            $table->foreignId('role_id')->constrained()->onDelete('cascade');
         });
     }
 
