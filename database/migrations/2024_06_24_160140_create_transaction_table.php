@@ -17,10 +17,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->foreignId('customer_id')
-                ->constrained('customers')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+            $table->string('customer_name');
             $table->bigInteger('total_bayar');
             $table->bigInteger('kembalian');
             $table->enum('payment_method', ['cash', 'bank']);

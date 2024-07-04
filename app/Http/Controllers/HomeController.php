@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-use App\Models\Customer;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 
@@ -27,7 +26,6 @@ class HomeController extends Controller
     public function index()
     {
         $orders = Transaction::with(['id'])->get();
-        $customers_count = Customer::count();
 
         return view('home', [
             'orders_count' => $orders->count(),
@@ -42,8 +40,7 @@ class HomeController extends Controller
                     return $i->total();
                 }
                 return $i->receivedAmount();
-            })->sum(),
-            'customers_count' => $customers_count
+            })->sum()
         ]);
     }
 }
