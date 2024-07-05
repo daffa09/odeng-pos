@@ -23,37 +23,11 @@
                 @enderror
             </div>
 
-
             <div class="form-group">
-                <label for="description">{{ __('product.Description') }}</label>
-                <textarea name="description" class="form-control @error('description') is-invalid @enderror"
-                    id="description"
-                    placeholder="{{ __('product.Description') }}">{{ old('description', $product->description) }}</textarea>
-                @error('description')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label for="image">{{ __('product.Image') }}</label>
-                <div class="custom-file">
-                    <input type="file" class="custom-file-input" name="image" id="image">
-                    <label class="custom-file-label" for="image">{{ __('product.Choose_file') }}</label>
-                </div>
-                @error('image')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label for="barcode">{{ __('product.Barcode') }}</label>
-                <input type="text" name="barcode" class="form-control @error('barcode') is-invalid @enderror"
-                    id="barcode" placeholder="{{ __('product.Barcode') }}" value="{{ old('barcode', $product->barcode) }}">
-                @error('barcode')
+                <label for="code">{{ __('product.Code') }}</label>
+                <input type="text" name="code" class="form-control @error('code') is-invalid @enderror"
+                    id="code" placeholder="{{ __('product.Code') }}" value="{{ old('code', $product->code) }}" readonly>
+                @error('code')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>
@@ -72,23 +46,10 @@
             </div>
 
             <div class="form-group">
-                <label for="quantity">{{ __('product.Quantity') }}</label>
-                <input type="text" name="quantity" class="form-control @error('quantity') is-invalid @enderror"
-                    id="quantity" placeholder="{{ __('product.Quantity') }}" value="{{ old('quantity', $product->quantity) }}">
-                @error('quantity')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label for="status">{{ __('product.Status') }}</label>
-                <select name="status" class="form-control @error('status') is-invalid @enderror" id="status">
-                    <option value="1" {{ old('status', $product->status) === 1 ? 'selected' : ''}}>{{ __('common.Active') }}</option>
-                    <option value="0" {{ old('status', $product->status) === 0 ? 'selected' : ''}}>{{ __('common.Inactive') }}</option>
-                </select>
-                @error('status')
+                <label for="stock">{{ __('product.Stock') }}</label>
+                <input type="text" name="stock" class="form-control @error('stock') is-invalid @enderror"
+                    id="stock" placeholder="{{ __('product.Stock') }}" value="{{ old('stock', $product->stock) }}">
+                @error('stock')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>
