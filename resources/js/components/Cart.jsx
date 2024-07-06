@@ -354,17 +354,19 @@ class Cart extends Component {
                             <div
                                 onClick={() => this.addProductToCart(p.code)}
                                 key={p.id}
-                                className="item"
+                                className="item p-3 !cursor-pointer"
                             >
-                                <h5
+                                <p
+                                    className="mb-0 !font-bold"
                                     style={
                                         window.APP.warning_quantity > p.stock
                                             ? { color: "red" }
                                             : {}
                                     }
                                 >
-                                    {p.name}({p.stock})
-                                </h5>
+                                    {p.name} ({p.stock})
+                                </p>
+                                <p className="mb-0 !font-bold">{p.price}</p>
                             </div>
                         ))}
                     </div>
