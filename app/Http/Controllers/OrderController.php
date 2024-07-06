@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\OrderStoreRequest;
 use App\Models\Order;
+use App\Models\Transaction;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -30,26 +32,28 @@ class OrderController extends Controller
 
     public function store(OrderStoreRequest $request)
     {
-        $order = Order::create([
-            'customer_id' => $request->customer_id,
+        $transaction = Transaction::create([
             'user_id' => $request->user()->id,
+            'customer_name' => $request->customer_name,
+            'total_bayar' => $request->bayar,
+            'kembalian' => $request->kembalian,
+            'payment_method' => $request->payment_method,
         ]);
 
-        $cart = $request->user()->cart()->get();
+        $cart = $request["cart"];
+        
         foreach ($cart as $item) {
-            $order->items()->create([
-                'price' => $item->price * $item->pivot->quantity,
-                'quantity' => $item->pivot->quantity,
-                'product_id' => $item->id,
+            $transaction->detail()->create([
+                'price' => (int)$item["price"] * (int)$item["pivot"]["qty"],
+                'quantity' => $item["pivot"]["qty"],
+                'product_id' => $item["id"]
             ]);
-            $item->quantity = $item->quantity - $item->pivot->quantity;
-            $item->save();
+
+            $product = Product::find($item["id"]);
+            $product->stock = $item["stock"] - $item["pivot"]["qty"];
+            $product->save();
         }
-        $request->user()->cart()->detach();
-        $order->payments()->create([
-            'amount' => $request->amount,
-            'user_id' => $request->user()->id,
-        ]);
+
         return 'success';
     }
 }
