@@ -25,15 +25,19 @@ class HomeController extends Controller
     {
         $orders = Transaction::with(['user', 'detail'])->get();
 
+        $total_income = $orders->sum(function ($order) {
+            return $order->total_bayar - $order->kembalian;
+        });
+
+        $income_today = $orders->where('created_at', '>=', now()->startOfDay())
+            ->sum(function ($order) {
+                return $order->total_bayar - $order->kembalian;
+            });
+
         return view('home', [
             'orders_count' => $orders->count(),
-            'income' => $orders->sum(function ($order) {
-                return $order->total_bayar - $order->kembalian;
-            }),
-            'income_today' => $orders->where('created_at', '>=', now()->startOfDay())
-                ->sum(function ($order) {
-                    return $order->total_bayar - $order->kembalian;
-                }),
+            'income' => $total_income,
+            'income_today' => $income_today
         ]);
     }
 }

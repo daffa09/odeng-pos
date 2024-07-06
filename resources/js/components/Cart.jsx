@@ -25,7 +25,6 @@ class Cart extends Component {
 
         this.loadProducts = this.loadProducts.bind(this);
         this.handleChangeSearch = this.handleChangeSearch.bind(this);
-        this.handleSeach = this.handleSeach.bind(this);
         this.setPaymentMethod = this.setPaymentMethod.bind(this);
         this.setCustomer = this.setCustomer.bind(this);
         this.handleClickSubmit = this.handleClickSubmit.bind(this);
@@ -116,12 +115,7 @@ class Cart extends Component {
     handleChangeSearch(event) {
         const search = event.target.value;
         this.setState({ search });
-    }
-
-    handleSeach(event) {
-        if (event.keyCode === 13) {
-            this.loadProducts(event.target.value);
-        }
+        this.loadProducts(search);
     }
 
     addProductToCart(code) {
@@ -400,7 +394,6 @@ class Cart extends Component {
                             className="form-control"
                             placeholder={translations["search_product"] + "..."}
                             onChange={this.handleChangeSearch}
-                            onKeyDown={this.handleSeach}
                         />
                     </div>
                     <div className="order-product">
@@ -411,14 +404,21 @@ class Cart extends Component {
                                 className="item p-3 !cursor-pointer"
                             >
                                 <p
-                                    className="mb-0 !font-bold"
+                                    className="mb-0 font-bold text-lg text-bold"
                                     style={
                                         window.APP.warning_quantity > p.stock
                                             ? { color: "red" }
                                             : {}
                                     }
                                 >
-                                    {p.name} ({p.stock})
+                                    {p.name}
+                                </p>
+                                <p className="mb-0 !font-bold">
+                                    Qty :{" "}
+                                    {parseInt(p.stock)
+                                        .toFixed(2)
+                                        .replace(/\.00$/, "")
+                                        .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
                                 </p>
                                 <p className="mb-0 !font-bold">
                                     {window.APP.currency_symbol}

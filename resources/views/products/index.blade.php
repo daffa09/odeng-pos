@@ -28,8 +28,8 @@
                     <td>{{$product->id}}</td>
                     <td>{{$product->name}}</td>
                     <td>{{$product->code}}</td>
-                    <td>{{$product->price}}</td>
-                    <td>{{$product->stock}}</td>
+                    <td>Rp. {{ number_format($product->price, 0, ',', '.') }}</td>
+                    <td>{{ number_format($product->stock, 0, ',', '.') }}</td>
                     <td>
                         <a href="{{ route('products.edit', $product) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
                         <button class="btn btn-danger btn-delete" data-url="{{route('products.destroy', $product)}}"><i class="fas fa-trash"></i></button>
