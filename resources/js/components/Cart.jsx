@@ -401,7 +401,8 @@ class Cart extends Component {
                             <div
                                 onClick={() => this.addProductToCart(p.code)}
                                 key={p.id}
-                                className="item p-3 !cursor-pointer"
+                                className="item p-3"
+                                style={{ cursor: "pointer" }}
                             >
                                 <p
                                     className="mb-0 font-bold text-lg text-bold"
