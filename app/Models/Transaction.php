@@ -12,7 +12,7 @@ class Transaction extends Model
     protected $table = 'transaction';
 
     protected $fillable = [
-        'user_id', 'customer_id', 'total_bayar', 'kembalian', 'payment_method'
+        'user_id', 'customer_name', 'total_bayar', 'kembalian', 'payment_method'
     ];
 
     public function user()
@@ -20,13 +20,15 @@ class Transaction extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function customer()
-    {
-        return $this->belongsTo(Customer::class);
-    }
-
     public function detail()
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(DetailTransaction::class);
+    }
+
+    public function total_harga()
+    {
+        return $this->detail->map(function ($i){
+            return $i->price;
+        })->sum();
     }
 }

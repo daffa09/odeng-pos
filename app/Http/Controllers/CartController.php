@@ -20,29 +20,29 @@ class CartController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'barcode' => 'required|exists:products,barcode',
+            'code' => 'required|exists:products,code',
         ]);
-        $barcode = $request->barcode;
+        $code = $request->code;
 
-        $product = Product::where('barcode', $barcode)->first();
-        $cart = $request->user()->cart()->where('barcode', $barcode)->first();
+        $product = Product::where('code', $code)->first();
+        $cart = $request->user()->cart()->where('code', $code)->first();
         if ($cart) {
             // check product quantity
-            if ($product->quantity <= $cart->pivot->quantity) {
+            if ($product->stock <= $cart->pivot->stock) {
                 return response([
-                    'message' => __('cart.available', ['quantity' => $product->quantity]),
+                    'message' => __('cart.available', ['stock' => $product->stock]),
                 ], 400);
             }
-            // update only quantity
-            $cart->pivot->quantity = $cart->pivot->quantity + 1;
+            // update only stock
+            $cart->pivot->stock = $cart->pivot->stock + 1;
             $cart->pivot->save();
         } else {
-            if ($product->quantity < 1) {
+            if ($product->stock < 1) {
                 return response([
                     'message' => __('cart.outstock'),
                 ], 400);
             }
-            $request->user()->cart()->attach($product->id, ['quantity' => 1]);
+            $request->user()->cart()->attach($product->id, ['stock' => 1]);
         }
 
         return response('', 204);
