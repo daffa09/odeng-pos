@@ -10,11 +10,10 @@ class Cart extends Component {
         this.state = {
             cart: [],
             products: [],
-            customers: "",
+            customers: "walkin customer",
             payment_method: "cash",
             code: "",
             search: "",
-            // customer_id: "",
             translations: {},
         };
 
@@ -98,13 +97,6 @@ class Cart extends Component {
 
         this.setState({ cart });
         if (!qty) return;
-
-        // axios
-        //     .post("/admin/cart/change-qty", { product_id, quantity: qty })
-        //     .then((res) => {})
-        //     .catch((err) => {
-        //         Swal.fire("Error!", err.response.data.message, "error");
-        //     });
     }
 
     getTotal(cart) {
@@ -113,25 +105,19 @@ class Cart extends Component {
     }
 
     handleClickDelete(product_id) {
-        // axios
-        //     .post("/admin/cart/delete", { product_id, _method: "DELETE" })
-        //     .then((res) => {
-        //         const cart = this.state.cart.filter((c) => c.id !== product_id);
-        //         this.setState({ cart });
-        //     });
         const cart = this.state.cart.filter((c) => c.id !== product_id);
         this.setState({ cart });
     }
+
     handleEmptyCart() {
-        // axios.post("/admin/cart/empty", { _method: "DELETE" }).then((res) => {
-        //     this.setState({ cart: [] });
-        // });
         this.setState({ cart: [] });
     }
+
     handleChangeSearch(event) {
         const search = event.target.value;
         this.setState({ search });
     }
+
     handleSeach(event) {
         if (event.keyCode === 13) {
             this.loadProducts(event.target.value);
@@ -143,12 +129,11 @@ class Cart extends Component {
         if (!!product) {
             // if product is already in cart
             let cart = this.state.cart.find((c) => c.id === product.id);
-            
+
             if (!!cart) {
                 // update stock
                 this.setState({
                     cart: this.state.cart.map((c) => {
-                        // console.log(c);
                         if (
                             c.id === product.id &&
                             product.stock > c.pivot.qty
@@ -172,42 +157,64 @@ class Cart extends Component {
                     this.setState({ cart: [...this.state.cart, product] });
                 }
             }
-
-            console.log(this.state.cart)
-
-            // axios
-            //     .post("/admin/cart", { code })
-            //     .then((res) => {
-            //         // this.loadCart();
-            //         console.info(res);
-            //     })
-            //     .catch((err) => {
-            //         Swal.fire("Error!", err.response.data.message, "error");
-            //     });
         }
     }
 
     setCustomer(event) {
         this.setState({ customers: event.target.value });
     }
-    
+
     setPaymentMethod(event) {
         this.setState({ payment_method: event.target.value });
     }
 
     handleClickSubmit() {
+        const isCash = this.state.payment_method === "cash";
+
+        const formatNumber = (number) => {
+            return new Intl.NumberFormat("id-ID").format(number);
+        };
+
+        const parseNumber = (str) => {
+            const parsedValue = parseInt(str.replace(/\./g, ""), 10);
+            return isNaN(parsedValue) ? 0 : parsedValue;
+        };
+
         Swal.fire({
             title: this.state.translations["received_amount"],
             input: "text",
-            inputValue: this.getTotal(this.state.cart),
+            inputValue: formatNumber(this.getTotal(this.state.cart)),
+            inputAttributes: isCash ? {} : { disabled: true },
             cancelButtonText: this.state.translations["cancel_pay"],
             showCancelButton: true,
             confirmButtonText: this.state.translations["confirm_pay"],
             showLoaderOnConfirm: true,
+            html: `
+            <div>
+                ${
+                    !isCash
+                        ? `<input type="checkbox" id="confirmCheckbox"> Sudah Transfer?`
+                        : ""
+                }
+            </div>
+        `,
             preConfirm: (amount) => {
+                if (
+                    !isCash &&
+                    !document.getElementById("confirmCheckbox").checked
+                ) {
+                    Swal.showValidationMessage(
+                        this.state.translations["please_confirm"]
+                    );
+                    return false;
+                }
+
                 const harga = parseInt(this.getTotal(this.state.cart));
-                const bayar = parseInt(amount);
-                const kembailan = (bayar > harga)? bayar-harga : 0;
+                const bayar = parseNumber(amount);
+                const kembalian = bayar > harga ? bayar - harga : 0;
+                const formattedKembalian = new Intl.NumberFormat(
+                    "id-ID"
+                ).format(kembalian);
 
                 return axios
                     .post("/admin/orders", {
@@ -216,26 +223,64 @@ class Cart extends Component {
                         payment_method: this.state.payment_method,
                         bayar,
                         harga: harga,
-                        kembalian: kembailan
+                        kembalian: kembalian,
                     })
                     .then((res) => {
                         this.loadCart();
+                        Swal.fire({
+                            title: "Berhasil!",
+                            text: isCash
+                                ? `Kembalian: Rp. ${formattedKembalian}`
+                                : "Pesanan Berhasil", // Menggunakan template literal untuk menyertakan nilai variabel kembalian jika isCash true
+                            icon: "success",
+                        });
+
                         return res.data;
                     })
                     .catch((err) => {
                         Swal.showValidationMessage(err.response.data.message);
                     });
             },
+            willOpen: () => {
+                const confirmButton = Swal.getConfirmButton();
+                if (!isCash) {
+                    confirmButton.disabled = true;
+                    document
+                        .getElementById("confirmCheckbox")
+                        .addEventListener("change", function () {
+                            confirmButton.disabled = !this.checked;
+                        });
+                }
+
+                const input = Swal.getInput();
+                input.addEventListener("input", function () {
+                    const cursorPosition = input.selectionStart;
+                    const valueBeforeFormatting = input.value.replace(
+                        /\./g,
+                        ""
+                    );
+                    const formattedValue = formatNumber(
+                        parseNumber(valueBeforeFormatting)
+                    );
+                    input.value = formattedValue ? formattedValue : 0;
+
+                    // Update cursor position
+                    const diff =
+                        formattedValue.length - valueBeforeFormatting.length;
+                    input.setSelectionRange(
+                        cursorPosition + diff,
+                        cursorPosition + diff
+                    );
+                });
+            },
             allowOutsideClick: () => !Swal.isLoading(),
         }).then((result) => {
-            if (result.value) {
-                //
-            }
+            console.log(result.value);
         });
     }
 
     render() {
-        const { cart, products, customers, code, translations } = this.state;
+        const { cart, products, translations, customers } = this.state;
         return (
             <div className="row">
                 <div className="col-md-6 col-lg-4">
@@ -246,6 +291,7 @@ class Cart extends Component {
                                 className="form-control"
                                 name="customer_name"
                                 placeholder="Customer Name"
+                                value={this.state.customerName || customers}
                                 onChange={this.setCustomer}
                             />
                         </div>
@@ -287,7 +333,7 @@ class Cart extends Component {
                                                     }
                                                 />
                                                 <button
-                                                    className="btn btn-danger btn-sm"
+                                                    className="btn btn-danger btn-sm ml-2"
                                                     onClick={() =>
                                                         this.handleClickDelete(
                                                             c.id
@@ -299,9 +345,13 @@ class Cart extends Component {
                                             </td>
                                             <td className="text-right">
                                                 {window.APP.currency_symbol}{" "}
-                                                {(
-                                                    c.price * c.pivot.qty
-                                                ).toFixed(2)}
+                                                {(c.price * c.pivot.qty)
+                                                    .toFixed(2)
+                                                    .replace(/\.00$/, "")
+                                                    .replace(
+                                                        /\B(?=(\d{3})+(?!\d))/g,
+                                                        "."
+                                                    )}
                                             </td>
                                         </tr>
                                     ))}
@@ -313,7 +363,11 @@ class Cart extends Component {
                     <div className="row">
                         <div className="col">{translations["total"]}:</div>
                         <div className="col text-right">
-                            {window.APP.currency_symbol} {this.getTotal(cart)}
+                            {window.APP.currency_symbol}{" "}
+                            {parseFloat(this.getTotal(cart))
+                                .toFixed(2)
+                                .replace(/\.00$/, "")
+                                .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
                         </div>
                     </div>
                     <div className="row">
@@ -366,7 +420,13 @@ class Cart extends Component {
                                 >
                                     {p.name} ({p.stock})
                                 </p>
-                                <p className="mb-0 !font-bold">{p.price}</p>
+                                <p className="mb-0 !font-bold">
+                                    {window.APP.currency_symbol}
+                                    {parseFloat(p.price)
+                                        .toFixed(2)
+                                        .replace(/\.00$/, "")
+                                        .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                                </p>
                             </div>
                         ))}
                     </div>

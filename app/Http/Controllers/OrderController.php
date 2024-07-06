@@ -9,17 +9,18 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function index(Request $request) {
-        $orders = Transaction::with('detail')->get();
+    public function index(Request $request)
+    {
+        $orders = Transaction::with('detail')->get()->sortDesc();
 
-        if($request->start_date) {
+        if ($request->start_date) {
             $orders = $orders->where('created_at', '>=', $request->start_date);
         }
-        if($request->end_date) {
+        if ($request->end_date) {
             $orders = $orders->where('created_at', '<=', $request->end_date . ' 23:59:59');
         }
-        
-        $total_harga = $orders->map(function($i) {
+
+        $total_harga = $orders->map(function ($i) {
             return $i->total_harga();
         })->sum();
 
@@ -39,7 +40,7 @@ class OrderController extends Controller
         ]);
 
         $cart = $request["cart"];
-        
+
         foreach ($cart as $item) {
             $transaction->detail()->create([
                 'price' => (int)$item["price"] * (int)$item["pivot"]["qty"],

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $fillable = [
-        'customer_id',
         'user_id'
     ];
 
@@ -28,7 +27,7 @@ class Order extends Model
 
     public function getCustomerName()
     {
-        if($this->customer) {
+        if ($this->customer) {
             return $this->customer->first_name . ' ' . $this->customer->last_name;
         }
         return __('customer.working');
@@ -36,7 +35,7 @@ class Order extends Model
 
     public function total()
     {
-        return $this->items->map(function ($i){
+        return $this->items->map(function ($i) {
             return $i->price;
         })->sum();
     }
@@ -48,7 +47,7 @@ class Order extends Model
 
     public function receivedAmount()
     {
-        return $this->payments->map(function ($i){
+        return $this->payments->map(function ($i) {
             return $i->amount;
         })->sum();
     }

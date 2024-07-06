@@ -27,8 +27,6 @@ class Transaction extends Model
 
     public function total_harga()
     {
-        return $this->detail->map(function ($i){
-            return $i->price;
-        })->sum();
+        return $this->detail()->sum('price');
     }
 }

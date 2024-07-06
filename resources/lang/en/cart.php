@@ -28,9 +28,9 @@ return [
     // General messages
     //==========================================
     'scan_barcode'      => 'Scan Barcode...',
-    'received_amount'   => 'Received Amount',
-    'confirm_pay'       => 'Receive',
-    'cancel_pay'        => 'Cancel',
+    'received_amount'   => 'Konfirmasi Pembayaran',
+    'confirm_pay'       => 'Bayar',
+    'cancel_pay'        => 'Batal',
     'general_customer'  => 'General Customer',
     'product_name'      => 'Product Name',
     'quantity'          => 'Quantity',

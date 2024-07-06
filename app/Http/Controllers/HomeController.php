@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Order;
 use App\Models\Transaction;
-use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
@@ -25,22 +23,17 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $orders = Transaction::with(['id'])->get();
+        $orders = Transaction::with(['user', 'detail'])->get();
 
         return view('home', [
             'orders_count' => $orders->count(),
-            'income' => $orders->map(function ($i) {
-                if ($i->receivedAmount() > $i->total()) {
-                    return $i->total();
-                }
-                return $i->receivedAmount();
-            })->sum(),
-            'income_today' => $orders->where('created_at', '>=', date('Y-m-d') . ' 00:00:00')->map(function ($i) {
-                if ($i->receivedAmount() > $i->total()) {
-                    return $i->total();
-                }
-                return $i->receivedAmount();
-            })->sum()
+            'income' => $orders->sum(function ($order) {
+                return $order->total_bayar - $order->kembalian;
+            }),
+            'income_today' => $orders->where('created_at', '>=', now()->startOfDay())
+                ->sum(function ($order) {
+                    return $order->total_bayar - $order->kembalian;
+                }),
         ]);
     }
 }
