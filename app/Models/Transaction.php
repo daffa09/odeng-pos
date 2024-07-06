@@ -24,4 +24,11 @@ class Transaction extends Model
     {
         return $this->hasMany(DetailTransaction::class);
     }
+
+    public function total_harga()
+    {
+        return $this->detail->map(function ($i){
+            return $i->price;
+        })->sum();
+    }
 }
