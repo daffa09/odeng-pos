@@ -38,11 +38,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function cart()
-    {
-        return $this->belongsToMany(Product::class, 'user_cart')->withPivot('quantity');
-    }
-
     public function role()
     {
         return $this->hasOne(Role::class);

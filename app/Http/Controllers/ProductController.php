@@ -93,22 +93,9 @@ class ProductController extends Controller
     public function update(ProductUpdateRequest $request, Product $product)
     {
         $product->name = $request->name;
-        $product->description = $request->description;
-        $product->barcode = $request->barcode;
+        $product->code = $request->code;
         $product->price = $request->price;
-        $product->quantity = $request->quantity;
-        $product->status = $request->status;
-
-        if ($request->hasFile('image')) {
-            // Delete old image
-            if ($product->image) {
-                Storage::delete($product->image);
-            }
-            // Store image
-            $image_path = $request->file('image')->store('products', 'public');
-            // Save to Database
-            $product->image = $image_path;
-        }
+        $product->stock = $request->stock;
 
         if (!$product->save()) {
             return redirect()->back()->with('error', __('product.error_updating'));

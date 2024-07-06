@@ -30,35 +30,31 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>{{ __('order.ID') }}</th>
-                    <th>{{ __('order.Customer_Name') }}</th>
-                    <th>{{ __('order.Total') }}</th>
-                    <th>{{ __('order.Received_Amount') }}</th>
-                    <th>{{ __('order.Status') }}</th>
-                    <th>{{ __('order.To_Pay') }}</th>
-                    <th>{{ __('order.Created_At') }}</th>
+                    <th>ID</th>
+                    <th>Nama Customer</th>
+                    <th>Total Harga</th>
+                    <th>Total Bayar</th>
+                    <th>Kembalian</th>
+                    <th>Metode Pembayaran</th>
+                    <th>Tanggal</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($orders as $order)
                 <tr>
-                    <td>{{$order->id}}</td>
-                    <td>{{$order->getCustomerName()}}</td>
-                    <td>Rp. {{$order->formattedTotal()}}</td>
-                    <td>Rp. {{$order->formattedReceivedAmount()}}</td>
-                    <td>
-                        @if($order->receivedAmount() == 0)
-                            <span class="badge badge-danger">{{ __('order.Not_Paid') }}</span>
-                        @elseif($order->receivedAmount() < $order->total())
-                            <span class="badge badge-warning">{{ __('order.Partial') }}</span>
-                        @elseif($order->receivedAmount() == $order->total())
-                            <span class="badge badge-success">{{ __('order.Paid') }}</span>
-                        @elseif($order->receivedAmount() > $order->total())
-                            <span class="badge badge-info">{{ __('order.Change') }}</span>
-                        @endif
+                   <td>{{ $order->id }}</td>
+                   <td>{{ $order->customer_name }}</td>
+                   <td>Rp. {{ number_format($order->detail->sum('price')) }}</td>
+                   <td>Rp. {{ number_format($order->total_bayar) }}</td>
+                   <td>{{ number_format($order->kembalian) }}</td>
+                   <td>
+                       @if($order->payment_method == "cash")
+                       <span class="badge badge-success">{{ $order->payment_method }}</span>
+                       @elseif($order->payment_method == "bank")
+                       <span class="badge badge-info">{{ $order->payment_method }}</span>
+                       @endif
                     </td>
-                    <td>{{config('settings.currency_symbol')}} {{number_format($order->total() - $order->receivedAmount(), 2)}}</td>
-                    <td>{{$order->created_at->format('Y-m-d')}}</td>
+                    <td>{{ $order->created_at }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -66,15 +62,15 @@
                 <tr>
                     <th></th>
                     <th></th>
-                    <th>Rp. {{ number_format($total, 2) }}</th>
-                    <th>Rp. {{ number_format($receivedAmount, 2) }}</th>
+                    <th>Rp. {{ number_format($total_harga) }}</th>
+                    <th>Rp. {{ number_format($total_bayar) }}</th>
+                    <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
                 </tr>
             </tfoot>
         </table>
-        {{ $orders->render() }}
     </div>
 </div>
 @endsection

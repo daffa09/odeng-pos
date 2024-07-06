@@ -18,14 +18,10 @@ class ProductResource extends JsonResource
         return [
             'id'=> $this->id,
             'name'=> $this->name,
-            'description' => $this->description,
-            'image' => $this->image,
-            'barcode' => $this->barcode,
+            'code' => $this->code,
             'price' => $this->price,
-            'quantity' => $this->quantity,
-            'status' => $this->status,
+            'stock' => $this->stock,
             'created_at' => $this->created_at,
-            'image_url' => Storage::url($this->image)
         ];
     }
 }
